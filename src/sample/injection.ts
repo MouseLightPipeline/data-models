@@ -4,7 +4,7 @@ import {isNull} from "util";
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {INeuron} from "./neuron";
 import {IFluorophore} from "./fluorophore";
-import {IInjectionVirus} from "./InjectionVirus";
+import {IInjectionVirus} from "./injectionVirus";
 import {IBrainArea} from "./brainArea";
 import {ISample} from "./sample";
 
