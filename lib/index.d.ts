@@ -14,4 +14,5 @@ export { IMouseStrain } from "./sample/MouseStrain";
 export { INeuron } from "./sample/Neuron";
 export { IRegistrationTransform } from "./sample/RegistrationTransform";
 export { ISample } from "./sample/Sample";
+export { IConnectionOptions } from "./connector/connector";
 export { SampleConnector } from "./connector/sample";
