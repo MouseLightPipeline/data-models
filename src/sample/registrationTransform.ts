@@ -1,7 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull, isUndefined} from "util";
 
-import {IModelImportDefinition} from "../index";
+import {IModelImportDefinition} from "../connector/modelLoader";
 import {ISample} from "./sample";
 
 export interface IRegistrationTransform {

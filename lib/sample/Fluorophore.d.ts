@@ -1,4 +1,4 @@
-import { IModelImportDefinition } from "../index";
+import { IModelImportDefinition } from "../connector/modelLoader";
 import { IInjection } from "./injection";
 export interface IFluorophore {
     id: string;

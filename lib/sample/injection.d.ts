@@ -1,4 +1,4 @@
-import { IModelImportDefinition } from "../index";
+import { IModelImportDefinition } from "../connector/modelLoader";
 import { INeuron } from "./neuron";
 import { IFluorophore } from "./fluorophore";
 import { IInjectionVirus } from "./InjectionVirus";

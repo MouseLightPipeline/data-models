@@ -1,4 +1,4 @@
-import { IModelImportDefinition } from "../index";
+import { IModelImportDefinition } from "../connector/modelLoader";
 import { ISample } from "./sample";
 export interface IRegistrationTransform {
     id: string;

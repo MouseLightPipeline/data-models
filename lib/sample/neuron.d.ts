@@ -1,4 +1,4 @@
-import { IModelImportDefinition } from "../index";
+import { IModelImportDefinition } from "../connector/modelLoader";
 import { IInjection } from "./injection";
 import { IBrainArea } from "./brainArea";
 export interface INeuron {

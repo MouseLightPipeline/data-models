@@ -1,6 +1,6 @@
 import {Sequelize, DataTypes} from "sequelize";
 
-import {IModelImportDefinition} from "../index";
+import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
 import {INeuron} from "./neuron";
 
