@@ -2,7 +2,7 @@ import {BrainArea} from "../sample/brainArea";
 import {Fluorophore} from "../sample/fluorophore";
 import {Injection} from "../sample/injection";
 import {InjectionVirus} from "../sample/InjectionVirus";
-import {MouseStrain} from "../sample/mousestrain";
+import {MouseStrain} from "../sample/mouseStrain";
 import {Neuron} from "../sample/neuron";
 import {RegistrationTransform} from "../sample/registrationTransform";
 import {Sample} from "../sample/sample";

@@ -4,7 +4,7 @@ import {isNull} from "util";
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
 import {IRegistrationTransform} from "./registrationTransform";
-import {IMouseStrain} from "./mousestrain";
+import {IMouseStrain} from "./mouseStrain";
 
 export interface ISample {
     id: string,
