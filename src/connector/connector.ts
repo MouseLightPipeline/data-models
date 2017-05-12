@@ -7,8 +7,8 @@ const debug = require("debug")("ndb:data-models:connector");
 
 export interface IConnectionOptions extends Options {
     database: string;
-    username: string;
-    password: string;
+    username?: string;
+    password?: string;
 }
 
 export class Connector<T> {
