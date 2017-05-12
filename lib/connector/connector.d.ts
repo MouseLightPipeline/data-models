@@ -1,4 +1,5 @@
 /// <reference types="sequelize" />
+import * as Sequelize from "sequelize";
 import { IModelImportDefinition } from "./modelLoader";
 import { Options } from "sequelize";
 export interface IConnectionOptions extends Options {
@@ -13,4 +14,7 @@ export declare class Connector<T> {
     private _isConnected;
     constructor(connectionOptions: IConnectionOptions, modelNamespaces: IModelImportDefinition[]);
     authenticate(): Promise<void>;
+    readonly connection: Sequelize.Sequelize;
+    readonly models: T;
+    readonly isConnected: boolean;
 }
