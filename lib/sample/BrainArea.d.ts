@@ -1,14 +1,13 @@
-/// <reference types="sequelize" />
-import { Sequelize, DataTypes } from "sequelize";
+import { IModelImportDefinition } from "../index";
 import { IInjection } from "./injection";
 import { INeuron } from "./neuron";
 export interface IBrainArea {
     id: string;
     structureId: number;
     depth: number;
+    name: string;
     parentStructureId: number;
     structureIdPath: string;
-    name: string;
     safeName: string;
     acronym: string;
     atlasId: number;
@@ -23,7 +22,4 @@ export interface IBrainArea {
     getInjections(): IInjection[];
     getNeurons(): INeuron[];
 }
-export declare namespace BrainArea {
-    const ModelName = "BrainArea";
-    function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any;
-}
+export declare const BrainArea: IModelImportDefinition;

@@ -1,5 +1,4 @@
-/// <reference types="sequelize" />
-import { Sequelize, DataTypes } from "sequelize";
+import { IModelImportDefinition } from "../index";
 import { INeuron } from "./neuron";
 import { IFluorophore } from "./fluorophore";
 import { IInjectionVirus } from "./InjectionVirus";
@@ -19,7 +18,4 @@ export interface IInjection {
     getFluorophore(): IFluorophore;
     getNeurons(): INeuron[];
 }
-export declare namespace Injection {
-    const ModelName = "Injection";
-    function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any;
-}
+export declare const Injection: IModelImportDefinition;

@@ -1,5 +1,4 @@
-/// <reference types="sequelize" />
-import { Sequelize, DataTypes } from "sequelize";
+import { IModelImportDefinition } from "../index";
 import { IInjection } from "./injection";
 import { IRegistrationTransform } from "./registrationTransform";
 import { IMouseStrain } from "./mousestrain";
@@ -19,7 +18,4 @@ export interface ISample {
     getRegistrationTransforms(): IRegistrationTransform;
     getMouseStrain(): IMouseStrain;
 }
-export declare namespace Sample {
-    const ModelName = "Sample";
-    function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any;
-}
+export declare const Sample: IModelImportDefinition;

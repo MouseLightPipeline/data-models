@@ -1,6 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull, isUndefined} from "util";
 
+import {IModelImportDefinition} from "../index";
 import {ISample} from "./sample";
 
 export interface IRegistrationTransform {
@@ -15,10 +16,14 @@ export interface IRegistrationTransform {
     getSample(): ISample;
 }
 
-export namespace RegistrationTransform {
-    export const ModelName = "RegistrationTransform";
+const ModelName = "RegistrationTransform";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class RegistrationTransformModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const RegistrationTransform: any = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -134,3 +139,5 @@ export namespace RegistrationTransform {
         return RegistrationTransform;
     }
 }
+
+export const RegistrationTransform: IModelImportDefinition = new RegistrationTransformModelDefinition();

@@ -1,5 +1,4 @@
-/// <reference types="sequelize" />
-import { Sequelize, DataTypes } from "sequelize";
+import { IModelImportDefinition } from "../index";
 import { ISample } from "./sample";
 export interface IMouseStrain {
     id: string;
@@ -8,7 +7,4 @@ export interface IMouseStrain {
     updatedAt: Date;
     getSamples(): ISample[];
 }
-export declare namespace MouseStrain {
-    const ModelName = "MouseStrain";
-    function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any;
-}
+export declare const MouseStrain: IModelImportDefinition;

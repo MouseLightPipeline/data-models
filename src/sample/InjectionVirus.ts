@@ -1,6 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull} from "util";
 
+import {IModelImportDefinition} from "../index";
 import {IInjection} from "./injection";
 
 export interface IInjectionVirus {
@@ -12,10 +13,14 @@ export interface IInjectionVirus {
     getInjections(): IInjection;
 }
 
-export namespace InjectionVirus {
-    export const ModelName = "InjectionVirus";
+const ModelName = "InjectionVirus";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class InjectionVirusModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const InjectionVirus: any = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -76,3 +81,5 @@ export namespace InjectionVirus {
         return InjectionVirus;
     }
 }
+
+export const InjectionVirus: IModelImportDefinition = new InjectionVirusModelDefinition();

@@ -1,6 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull} from "util";
 
+import {IModelImportDefinition} from "../index";
 import {ISample} from "./sample";
 
 export interface IMouseStrain {
@@ -12,10 +13,14 @@ export interface IMouseStrain {
     getSamples(): ISample[];
 }
 
-export namespace MouseStrain {
-    export const ModelName = "MouseStrain";
+const ModelName = "MouseStrain";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class MouseStrainModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const MouseStrain: any = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -75,3 +80,5 @@ export namespace MouseStrain {
         return MouseStrain;
     }
 }
+
+export const MouseStrain: IModelImportDefinition = new MouseStrainModelDefinition();

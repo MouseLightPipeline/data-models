@@ -1,3 +1,5 @@
+/// <reference types="sequelize" />
+import { DataTypes, Sequelize } from "sequelize";
 export { BrainArea } from "./sample/BrainArea";
 export { Fluorophore } from "./sample/Fluorophore";
 export { Injection } from "./sample/Injection";
@@ -14,12 +16,10 @@ export { IMouseStrain } from "./sample/MouseStrain";
 export { INeuron } from "./sample/Neuron";
 export { IRegistrationTransform } from "./sample/RegistrationTransform";
 export { ISample } from "./sample/Sample";
-import { BrainArea } from "./sample/brainArea";
-import { Fluorophore } from "./sample/fluorophore";
-import { Injection } from "./sample/injection";
-import { InjectionVirus } from "./sample/InjectionVirus";
-import { MouseStrain } from "./sample/mousestrain";
-import { Neuron } from "./sample/neuron";
-import { RegistrationTransform } from "./sample/registrationTransform";
-import { Sample } from "./sample/sample";
-export declare const AllModels: (typeof BrainArea | typeof Fluorophore | typeof Injection | typeof InjectionVirus | typeof MouseStrain | typeof Neuron | typeof RegistrationTransform | typeof Sample)[];
+export interface IModelImportDefinition {
+    modelName: string;
+    sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any;
+}
+export declare const AllSampleModels: IModelImportDefinition[];
+export declare function loadModels(db: Sequelize, modelNamespaces: IModelImportDefinition[]): any;
+export declare function loadSampleModels(db: Sequelize): any;

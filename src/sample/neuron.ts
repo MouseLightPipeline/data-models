@@ -1,6 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull} from "util";
 
+import {IModelImportDefinition} from "../index";
 import {IInjection} from "./injection";
 import {IBrainArea} from "./brainArea";
 
@@ -23,10 +24,14 @@ export interface INeuron {
     getBrainArea(): IBrainArea;
 }
 
-export namespace Neuron {
-    export const ModelName = "Neuron";
+const ModelName = "Neuron";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class NeuronModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const Neuron: any = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -211,3 +216,5 @@ export namespace Neuron {
         return Neuron;
     }
 }
+
+export const Neuron: IModelImportDefinition = new NeuronModelDefinition();

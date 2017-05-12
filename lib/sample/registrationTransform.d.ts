@@ -1,5 +1,4 @@
-/// <reference types="sequelize" />
-import { Sequelize, DataTypes } from "sequelize";
+import { IModelImportDefinition } from "../index";
 import { ISample } from "./sample";
 export interface IRegistrationTransform {
     id: string;
@@ -11,7 +10,4 @@ export interface IRegistrationTransform {
     updatedAt: Date;
     getSample(): ISample;
 }
-export declare namespace RegistrationTransform {
-    const ModelName = "RegistrationTransform";
-    function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any;
-}
+export declare const RegistrationTransform: IModelImportDefinition;

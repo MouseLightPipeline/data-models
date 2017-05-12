@@ -1,6 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull} from "util";
 
+import {IModelImportDefinition} from "../index";
 import {IInjection} from "./injection";
 import {IRegistrationTransform} from "./registrationTransform";
 import {IMouseStrain} from "./mousestrain";
@@ -23,10 +24,14 @@ export interface ISample {
     getMouseStrain(): IMouseStrain;
 }
 
-export namespace Sample {
-    export const ModelName = "Sample";
+const ModelName = "Sample";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class SampleModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const Sample: any = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -144,3 +149,5 @@ export namespace Sample {
         return Sample;
     }
 }
+
+export const Sample: IModelImportDefinition = new SampleModelDefinition();

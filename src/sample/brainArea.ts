@@ -1,5 +1,6 @@
 import {Sequelize, DataTypes} from "sequelize";
 
+import {IModelImportDefinition} from "../index";
 import {IInjection} from "./injection";
 import {INeuron} from "./neuron";
 
@@ -7,9 +8,9 @@ export interface IBrainArea {
     id: string;
     structureId: number;
     depth: number;
+    name: string;
     parentStructureId: number;
     structureIdPath: string;
-    name: string;
     safeName: string;
     acronym: string;
     atlasId: number;
@@ -26,10 +27,14 @@ export interface IBrainArea {
     getNeurons(): INeuron[];
 }
 
-export namespace BrainArea {
-    export const ModelName = "BrainArea";
+const ModelName = "BrainArea";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class BrainAreaModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const BrainArea = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -38,11 +43,18 @@ export namespace BrainArea {
             },
             structureId: DataTypes.INTEGER,
             depth: DataTypes.INTEGER,
+            name: DataTypes.TEXT,
             parentStructureId: DataTypes.INTEGER,
             structureIdPath: DataTypes.TEXT,
-            name: DataTypes.TEXT,
             safeName: DataTypes.TEXT,
-            acronym: DataTypes.TEXT
+            acronym: DataTypes.TEXT,
+            atlasId: DataTypes.INTEGER,
+            graphId: DataTypes.INTEGER,
+            graphOrder: DataTypes.INTEGER,
+            hemisphereId: DataTypes.INTEGER,
+            geometryFile: DataTypes.TEXT,
+            geometryColor: DataTypes.TEXT,
+            geometryEnable: DataTypes.BOOLEAN
         }, {
             classMethods: {
                 associate: (models: any) => {
@@ -57,3 +69,5 @@ export namespace BrainArea {
         return BrainArea;
     }
 }
+
+export const BrainArea: IModelImportDefinition = new BrainAreaModelDefinition();

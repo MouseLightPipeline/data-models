@@ -1,6 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull} from "util";
 
+import {IModelImportDefinition} from "../index";
 import {IInjection} from "./injection";
 
 export interface IFluorophore {
@@ -12,10 +13,14 @@ export interface IFluorophore {
     getInjections(): IInjection[];
 }
 
-export namespace Fluorophore {
-    export const ModelName = "Fluorophore";
+const ModelName = "Fluorophore";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class FluorophoreModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const Fluorophore: any = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -75,3 +80,5 @@ export namespace Fluorophore {
         return Fluorophore;
     }
 }
+
+export const Fluorophore: IModelImportDefinition = new FluorophoreModelDefinition();

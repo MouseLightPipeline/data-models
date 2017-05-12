@@ -1,6 +1,7 @@
 import {Sequelize, DataTypes} from "sequelize";
 import {isNull} from "util";
 
+import {IModelImportDefinition} from "../index";
 import {INeuron} from "./neuron";
 import {IFluorophore} from "./fluorophore";
 import {IInjectionVirus} from "./InjectionVirus";
@@ -23,10 +24,14 @@ export interface IInjection {
     getNeurons(): INeuron[];
 }
 
-export namespace Injection {
-    export const ModelName = "Injection";
+const ModelName = "Injection";
 
-    export function sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
+class InjectionModelDefinition implements IModelImportDefinition {
+    private _modelName = ModelName;
+
+    public get modelName() {return this._modelName; }
+
+    public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const Injection: any = sequelize.define(ModelName, {
             id: {
                 primaryKey: true,
@@ -102,3 +107,5 @@ export namespace Injection {
         return Injection;
     }
 }
+
+export const Injection: IModelImportDefinition = new InjectionModelDefinition();
