@@ -16,3 +16,5 @@ export { IRegistrationTransform } from "./sample/registrationTransform";
 export { ISample } from "./sample/sample";
 export { IConnectionOptions } from "./connector/connector";
 export { SampleConnector } from "./connector/sample";
+export { migrate } from "./services/migrate";
+export { seed } from "./services/seed";

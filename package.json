@@ -1,18 +1,23 @@
 {
   "name": "ndb-data-models",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "repository": "https://github.com/MouseLightDataBrowser/data-models.git",
   "author": "Patrick Edson <pedson@leapscientific.com>",
   "license": "Janelia",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "scripts": {},
+  "scripts": {
+    "build": "rm -rf lib && tsc"
+  },
   "dependencies": {
     "debug": "^2.6.3",
-    "sequelize": "^3.30.4"
+    "pg": "^6.1.5",
+    "sequelize": "^3.30.4",
+    "umzug": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^7.0.18",
-    "@types/sequelize": "^3.4.43"
+    "@types/sequelize": "^3.4.43",
+    "@types/umzug": "^1.8.31"
   }
 }
