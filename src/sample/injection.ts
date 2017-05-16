@@ -111,7 +111,7 @@ class InjectionModelDefinition implements IModelImportDefinition {
             let injectionVirusId = null;
 
             if (injectionInput.injectionVirusName) {
-                const out = await Injection.FluorophoreModel.findOrCreateFromInput({
+                const out = await Injection.InjectionVirus.findOrCreateFromInput({
                     name: injectionInput.injectionVirusName
                 });
 
