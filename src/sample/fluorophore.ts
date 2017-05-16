@@ -73,7 +73,7 @@ class FluorophoreModelDefinition implements IModelImportDefinition {
 
         Fluorophore.createFromInput = async (fluorophoreInput: IFluorophoreInput): Promise<IFluorophore> => {
             if (!fluorophoreInput) {
-                throw {message: "No fluorophore input provided"};
+                throw {message: "Fluorophore properties are a required input"};
             }
 
             if (!fluorophoreInput.name) {
@@ -93,7 +93,7 @@ class FluorophoreModelDefinition implements IModelImportDefinition {
 
         Fluorophore.updateFromInput = async (fluorophoreInput: IFluorophoreInput): Promise<IFluorophore> => {
             if (!fluorophoreInput) {
-                throw {message: "No fluorophore input provided"};
+                throw {message: "Fluorophore properties are a required input"};
             }
 
             if (!fluorophoreInput.id) {
@@ -106,15 +106,15 @@ class FluorophoreModelDefinition implements IModelImportDefinition {
                 throw {message: "The fluorophore could not be found"};
             }
 
+            // Undefined is ok - although strange as that is the only property at the moment.
+            if (isNullOrEmpty(fluorophoreInput.name)) {
+                throw {message: "name cannot be empty or null"};
+            }
+
             const duplicate = await Fluorophore.findDuplicate(fluorophoreInput.name);
 
             if (duplicate && duplicate.id !== fluorophoreInput.id) {
                 throw {message: `The name "${Fluorophore.name}" has already been used`};
-            }
-
-            // Undefined is ok - although strange as that is the only property at the moment.
-            if (isNullOrEmpty(fluorophoreInput.name)) {
-                throw {message: "name cannot be empty or null"};
             }
 
             return row.update(fluorophoreInput);

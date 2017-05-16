@@ -71,19 +71,49 @@ class InjectionModelDefinition implements IModelImportDefinition {
         Injection.InjectionVirusModel = null;
         Injection.FluorophoreModel = null;
 
-        Injection.createFromInput = async (injectionInput: IInjectionInput): Promise<IInjection> => {
-            if (!injectionInput.sampleId || injectionInput.sampleId.length === 0) {
-                throw {message: "sample id is a required input"};
+        /**
+         * A given sample can have one injection per brain area/compartment.
+         * @param injectionInput
+         * @returns {Promise<IFluorophore>}
+         */
+        Injection.findDuplicate = async (injectionInput: IInjectionInput): Promise<IFluorophore> => {
+            if (!injectionInput || !injectionInput.sampleId || !injectionInput.brainAreaId) {
+                return null;
             }
 
-            if (!injectionInput.brainAreaId || injectionInput.brainAreaId.length === 0) {
-                throw {message: "brain area is a required input"};
+            return Injection.findOne({
+                where: {
+                    sampleId: injectionInput.sampleId,
+                    brainAreaId: injectionInput.brainAreaId
+                }
+            });
+        };
+
+        Injection.createFromInput = async (injectionInput: IInjectionInput): Promise<IInjection> => {
+            if (!injectionInput) {
+                throw {message: "Injection properties are a required input"};
+            }
+
+            if (!injectionInput.sampleId) {
+                throw {message: "Sample is a required input"};
+            }
+
+            if (!injectionInput.brainAreaId) {
+                throw {message: "Brain area is a required input"};
+            }
+
+            const duplicate = await Injection.findDuplicate(injectionInput);
+
+            if (duplicate) {
+                throw {message: `An injection for this sample in this brain compartment exists`};
             }
 
             let injectionVirusId = null;
 
             if (injectionInput.injectionVirusName) {
-                const out = await Injection.FluorophoreModel.findOrCreate(Injection.FluorophoreModel.duplicateWhereClause(injectionInput.injectionVirusName));
+                const out = await Injection.FluorophoreModel.findOrCreateFromInput({
+                    name: injectionInput.injectionVirusName
+                });
 
                 injectionVirusId = out[0].id;
             } else {
@@ -91,13 +121,15 @@ class InjectionModelDefinition implements IModelImportDefinition {
             }
 
             if (!injectionVirusId) {
-                throw {message: "injection virus is a required input"};
+                throw {message: "Injection virus is a required input"};
             }
 
             let fluorophoreId = null;
 
             if (injectionInput.fluorophoreName) {
-                const out = await Injection.FluorophoreModel.findOrCreate(Injection.FluorophoreModel.duplicateWhereClause(injectionInput.fluorophoreName));
+                const out = await Injection.FluorophoreModel.findOrCreateFromInput({
+                    name: injectionInput.fluorophoreName
+                });
 
                 fluorophoreId = out[0].id;
             } else {
@@ -105,7 +137,7 @@ class InjectionModelDefinition implements IModelImportDefinition {
             }
 
             if (!fluorophoreId) {
-                throw {message: "fluorophore is a required input"};
+                throw {message: "Fluorophore is a required input"};
             }
 
             return await Injection.create({
@@ -116,51 +148,39 @@ class InjectionModelDefinition implements IModelImportDefinition {
             });
         };
 
-        Injection.updateFromInput = async (injection: IInjectionInput): Promise<IInjection> => {
-            let row = await Injection.findById(injection.id);
+        Injection.updateFromInput = async (injectionInput: IInjectionInput): Promise<IInjection> => {
+            if (!injectionInput) {
+                throw {message: "Injection properties are a required input"};
+            }
+
+            if (!injectionInput.id) {
+                throw {message: "Injection input must contain the id of the object to update"};
+            }
+
+            let row = await Injection.findById(injectionInput.id);
 
             if (!row) {
                 throw {message: "The injection could not be found"};
             }
 
             // Undefined is ok (i.e., no update), null/empty is not allowed
-            if (isNullOrEmpty(injection.sampleId)) {
+            if (isNullOrEmpty(injectionInput.sampleId)) {
                 throw {message: "sample id must be a valid sample"};
             }
 
-            if (isNullOrEmpty(injection.brainAreaId)) {
+            if (isNullOrEmpty(injectionInput.brainAreaId)) {
                 throw {message: "brain area id must be a valid sample"};
             }
 
-            if (isNullOrEmpty(injection.injectionVirusId)) {
+            if (isNullOrEmpty(injectionInput.injectionVirusId)) {
                 throw {message: "injection virus id must be a valid sample"};
             }
 
-            if (isNullOrEmpty(injection.fluorophoreId)) {
+            if (isNullOrEmpty(injectionInput.fluorophoreId)) {
                 throw {message: "fluorophore id must be a valid sample"};
             }
 
-            return row.update(injection);
-        };
-
-        Injection.findVirusForInput = async (injectionInput: IInjectionInput): Promise<string> => {
-            let injectionVirusId = null;
-
-            if (injectionInput.injectionVirusName) {
-                const existing = await Injection.InjectionVirusModel.findOne({where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', injectionInput.injectionVirusName))});
-
-                if (existing) {
-                    injectionVirusId = existing.id;
-                }
-            }
-
-            if (!injectionVirusId) {
-                if (injectionInput.injectionVirusId) {
-                    injectionVirusId = injectionInput.injectionVirusId;
-                }
-            }
-
-            return injectionVirusId;
+            return row.update(injectionInput);
         };
 
         return Injection;

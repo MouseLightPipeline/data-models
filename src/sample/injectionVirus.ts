@@ -71,7 +71,7 @@ class InjectionVirusModelDefinition implements IModelImportDefinition {
 
         InjectionVirus.createFromInput = async (virusInput: IInjectionVirusInput): Promise<IInjectionVirus> => {
             if (!virusInput) {
-                throw {message: "No virus input provided"};
+                throw {message: "Injection virus properties are a required input"};
             }
 
             if (!virusInput.name) {
@@ -91,7 +91,7 @@ class InjectionVirusModelDefinition implements IModelImportDefinition {
 
         InjectionVirus.updateFromInput = async (virusInput: IInjectionVirusInput): Promise<IInjectionVirus> => {
             if (!virusInput) {
-                throw {message: "No virus input provided"};
+                throw {message: "Injection virus properties are a required input"};
             }
 
             if (!virusInput.id) {
@@ -104,15 +104,15 @@ class InjectionVirusModelDefinition implements IModelImportDefinition {
                 throw {message: "The injection virus could not be found"};
             }
 
+            // Undefined is ok - although strange as that is the only property at the moment.
+            if (isNullOrEmpty(virusInput.name)) {
+                throw {message: "name cannot be empty"};
+            }
+
             const duplicate = await InjectionVirus.findDuplicate(virusInput.name);
 
             if (duplicate && duplicate.id !== virusInput.id) {
                 throw {message: `The name "${virusInput.name}" has already been used`};
-            }
-
-            // Undefined is ok - although strange as that is the only property at the moment.
-            if (isNullOrEmpty(virusInput.name)) {
-                throw {message: "name cannot be empty"};
             }
 
             return row.update(virusInput);
