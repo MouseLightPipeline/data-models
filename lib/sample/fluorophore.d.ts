@@ -7,4 +7,8 @@ export interface IFluorophore {
     updatedAt: Date;
     getInjections(): IInjection[];
 }
+export interface IFluorophoreInput {
+    id: string;
+    name: string;
+}
 export declare const Fluorophore: IModelImportDefinition;

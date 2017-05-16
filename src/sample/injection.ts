@@ -7,6 +7,7 @@ import {IFluorophore} from "./fluorophore";
 import {IInjectionVirus} from "./injectionVirus";
 import {IBrainArea} from "./brainArea";
 import {ISample} from "./sample";
+import {isNullOrEmpty} from "../util/modelUtil";
 
 export interface IInjection {
     id: string;
@@ -24,12 +25,24 @@ export interface IInjection {
     getNeurons(): INeuron[];
 }
 
+export interface IInjectionInput {
+    id: string;
+    brainAreaId: string;
+    injectionVirusId: string;
+    injectionVirusName: string;
+    fluorophoreId: string;
+    fluorophoreName: string;
+    sampleId: string;
+}
+
 const ModelName = "Injection";
 
 class InjectionModelDefinition implements IModelImportDefinition {
     private _modelName = ModelName;
 
-    public get modelName() {return this._modelName; }
+    public get modelName() {
+        return this._modelName;
+    }
 
     public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const Injection: any = sequelize.define(ModelName, {
@@ -46,62 +59,108 @@ class InjectionModelDefinition implements IModelImportDefinition {
                     Injection.belongsTo(models.InjectionVirus, {foreignKey: "injectionVirusId", as: "injectionVirus"});
                     Injection.belongsTo(models.Fluorophore, {foreignKey: "fluorophoreId", as: "fluorophore"});
                     Injection.hasMany(models.Neuron, {foreignKey: "injectionId", as: "neurons"});
+
+                    Injection.InjectionVirusModel = models.InjectionVirus;
+                    Injection.FluorophoreModel = models.Fluorophore;
                 }
             },
             timestamps: true,
             paranoid: true
         });
 
-        Injection.createFromInput = async (injection: IInjection): Promise<IInjection> => {
-            if (!injection.sampleId || injection.sampleId.length === 0) {
+        Injection.InjectionVirusModel = null;
+        Injection.FluorophoreModel = null;
+
+        Injection.createFromInput = async (injectionInput: IInjectionInput): Promise<IInjection> => {
+            if (!injectionInput.sampleId || injectionInput.sampleId.length === 0) {
                 throw {message: "sample id is a required input"};
             }
 
-            if (!injection.brainAreaId || injection.brainAreaId.length === 0) {
+            if (!injectionInput.brainAreaId || injectionInput.brainAreaId.length === 0) {
                 throw {message: "brain area is a required input"};
             }
 
-            if (!injection.injectionVirusId || injection.injectionVirusId.length === 0) {
+            let injectionVirusId = null;
+
+            if (injectionInput.injectionVirusName) {
+                const out = await Injection.FluorophoreModel.findOrCreate(Injection.FluorophoreModel.duplicateWhereClause(injectionInput.injectionVirusName));
+
+                injectionVirusId = out[0].id;
+            } else {
+                injectionVirusId = injectionInput.injectionVirusId;
+            }
+
+            if (!injectionVirusId) {
                 throw {message: "injection virus is a required input"};
             }
 
-            if (!injection.fluorophoreId || injection.fluorophoreId.length === 0) {
+            let fluorophoreId = null;
+
+            if (injectionInput.fluorophoreName) {
+                const out = await Injection.FluorophoreModel.findOrCreate(Injection.FluorophoreModel.duplicateWhereClause(injectionInput.fluorophoreName));
+
+                fluorophoreId = out[0].id;
+            } else {
+                fluorophoreId = injectionInput.fluorophoreId;
+            }
+
+            if (!fluorophoreId) {
                 throw {message: "fluorophore is a required input"};
             }
 
             return await Injection.create({
-                sampleId: injection.sampleId,
-                brainAreaId: injection.brainAreaId,
-                injectionVirusId: injection.injectionVirusId,
-                fluorophoreId: injection.fluorophoreId
+                sampleId: injectionInput.sampleId,
+                brainAreaId: injectionInput.brainAreaId,
+                injectionVirusId: injectionVirusId,
+                fluorophoreId: fluorophoreId
             });
         };
 
-        Injection.updateFromInput = async (injection: IInjection): Promise<IInjection> => {
+        Injection.updateFromInput = async (injection: IInjectionInput): Promise<IInjection> => {
             let row = await Injection.findById(injection.id);
 
             if (!row) {
                 throw {message: "The injection could not be found"};
             }
 
-            // Undefined is ok, null is not allowed
-            if (isNull(injection.sampleId) || (injection.sampleId && injection.sampleId.length === 0)) {
+            // Undefined is ok (i.e., no update), null/empty is not allowed
+            if (isNullOrEmpty(injection.sampleId)) {
                 throw {message: "sample id must be a valid sample"};
             }
 
-            if (isNull(injection.brainAreaId) || (injection.brainAreaId && injection.brainAreaId.length === 0)) {
+            if (isNullOrEmpty(injection.brainAreaId)) {
                 throw {message: "brain area id must be a valid sample"};
             }
 
-            if (isNull(injection.injectionVirusId) || (injection.injectionVirusId && injection.injectionVirusId.length === 0)) {
+            if (isNullOrEmpty(injection.injectionVirusId)) {
                 throw {message: "injection virus id must be a valid sample"};
             }
 
-            if (isNull(injection.fluorophoreId) || (injection.fluorophoreId && injection.fluorophoreId.length === 0)) {
+            if (isNullOrEmpty(injection.fluorophoreId)) {
                 throw {message: "fluorophore id must be a valid sample"};
             }
 
             return row.update(injection);
+        };
+
+        Injection.findVirusForInput = async (injectionInput: IInjectionInput): Promise<string> => {
+            let injectionVirusId = null;
+
+            if (injectionInput.injectionVirusName) {
+                const existing = await Injection.InjectionVirusModel.findOne({where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', injectionInput.injectionVirusName))});
+
+                if (existing) {
+                    injectionVirusId = existing.id;
+                }
+            }
+
+            if (!injectionVirusId) {
+                if (injectionInput.injectionVirusId) {
+                    injectionVirusId = injectionInput.injectionVirusId;
+                }
+            }
+
+            return injectionVirusId;
         };
 
         return Injection;

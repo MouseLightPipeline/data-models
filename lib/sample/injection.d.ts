@@ -18,4 +18,13 @@ export interface IInjection {
     getFluorophore(): IFluorophore;
     getNeurons(): INeuron[];
 }
+export interface IInjectionInput {
+    id: string;
+    brainAreaId: string;
+    injectionVirusId: string;
+    injectionVirusName: string;
+    fluorophoreId: string;
+    fluorophoreName: string;
+    sampleId: string;
+}
 export declare const Injection: IModelImportDefinition;

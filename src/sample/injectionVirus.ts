@@ -1,8 +1,8 @@
 import {Sequelize, DataTypes} from "sequelize";
-import {isNull} from "util";
 
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
+import {isNullOrEmpty} from "../util/modelUtil";
 
 export interface IInjectionVirus {
     id: string;
@@ -11,6 +11,11 @@ export interface IInjectionVirus {
     updatedAt: Date;
 
     getInjections(): IInjection;
+}
+
+export interface IInjectionVirusInput {
+    id: string;
+    name: string;
 }
 
 const ModelName = "InjectionVirus";
@@ -39,43 +44,78 @@ class InjectionVirusModelDefinition implements IModelImportDefinition {
             paranoid: true
         });
 
-        InjectionVirus.isDuplicate = async (injectionVirus: IInjectionVirus, id: string = null): Promise<boolean> => {
-            const dupes = await InjectionVirus.findAll({where: {name: {$iLike: injectionVirus.name}}});
-
-            return dupes.length > 0 && (!id || (id !== dupes[0].id));
+        InjectionVirus.duplicateWhereClause = (name: string) => {
+            return {where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', name))}
         };
 
-        InjectionVirus.createFromInput = async (injectionVirus: IInjectionVirus): Promise<IInjectionVirus> => {
-            if (!injectionVirus.name || injectionVirus.name.length === 0) {
+        InjectionVirus.findDuplicate = async (name: string): Promise<IInjectionVirus> => {
+            if (!name) {
+                return null;
+            }
+
+            return InjectionVirus.findOne(InjectionVirus.duplicateWhereClause(name));
+        };
+
+        /**
+         * Complex where clause to allow for case insensitive requires defaults property.  Wrapping for consistency as
+         * a result.
+         * @param {IFluorophoreInput} fluorophore define name property
+         **/
+        InjectionVirus.findOrCreateFromInput = async (fluorophore: IInjectionVirusInput): Promise<IInjectionVirus> => {
+            const options = InjectionVirus.duplicateWhereClause(fluorophore.name);
+
+            options["defaults"] = {name: fluorophore.name};
+
+            return InjectionVirus.findOrCreate(options);
+        };
+
+        InjectionVirus.createFromInput = async (virusInput: IInjectionVirusInput): Promise<IInjectionVirus> => {
+            if (!virusInput) {
+                throw {message: "No virus input provided"};
+            }
+
+            if (!virusInput.name) {
                 throw {message: "name is a required input"};
             }
 
-            if (await InjectionVirus.isDuplicate(injectionVirus)) {
-                throw {message: `The name "${injectionVirus.name}" has already been used`};
+            const duplicate = await InjectionVirus.findDuplicate(virusInput.name);
+
+            if (duplicate) {
+                throw {message: `The name "${virusInput.name}" has already been used`};
             }
 
             return await InjectionVirus.create({
-                name: injectionVirus.name
+                name: virusInput.name
             });
         };
 
-        InjectionVirus.updateFromInput = async (injectionVirus: IInjectionVirus): Promise<IInjectionVirus> => {
-            let row = await InjectionVirus.findById(injectionVirus.id);
+        InjectionVirus.updateFromInput = async (virusInput: IInjectionVirusInput): Promise<IInjectionVirus> => {
+            if (!virusInput) {
+                throw {message: "No virus input provided"};
+            }
+
+            if (!virusInput.id) {
+                throw {message: "Virus input must contain the id of the object to update"};
+            }
+
+            let row = await InjectionVirus.findById(virusInput.id);
 
             if (!row) {
                 throw {message: "The injection virus could not be found"};
             }
 
-            if (injectionVirus.name && await InjectionVirus.isDuplicate(injectionVirus, injectionVirus.id)) {
-                throw {message: `The name "${injectionVirus.name}" has already been used`};
+            const duplicate = await InjectionVirus.findDuplicate(virusInput.name);
+
+            if (duplicate && duplicate.id !== virusInput.id) {
+                throw {message: `The name "${virusInput.name}" has already been used`};
             }
 
             // Undefined is ok - although strange as that is the only property at the moment.
-            if (isNull(injectionVirus.name) || (injectionVirus.name && injectionVirus.name.length === 0)) {
+            if (isNullOrEmpty(virusInput.name)) {
                 throw {message: "name cannot be empty"};
             }
 
-            return row.update(injectionVirus);
+            return row.update(virusInput);
         };
 
         return InjectionVirus;

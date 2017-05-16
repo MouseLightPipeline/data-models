@@ -7,4 +7,8 @@ export interface IInjectionVirus {
     updatedAt: Date;
     getInjections(): IInjection;
 }
+export interface IInjectionVirusInput {
+    id: string;
+    name: string;
+}
 export declare const InjectionVirus: IModelImportDefinition;

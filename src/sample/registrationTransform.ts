@@ -37,7 +37,6 @@ class RegistrationTransformModelDefinition implements IModelImportDefinition {
             classMethods: {
                 associate: (models: any) => {
                     RegistrationTransform.belongsTo(models.Sample, {foreignKey: "sampleId", as: "sample"});
-
                     RegistrationTransform.SampleModel = models.Sample;
                 }
             },
