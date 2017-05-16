@@ -1,5 +1,4 @@
 import {Sequelize, DataTypes} from "sequelize";
-import {isNull} from "util";
 
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {INeuron} from "./neuron";
@@ -11,28 +10,28 @@ import {isNullOrEmpty} from "../util/modelUtil";
 
 export interface IInjection {
     id: string;
-    brainAreaId: string;
-    injectionVirusId: string;
-    fluorophoreId: string;
-    sampleId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    brainAreaId?: string;
+    injectionVirusId?: string;
+    fluorophoreId?: string;
+    sampleId?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 
-    getSample(): ISample;
-    getBrainArea(): IBrainArea;
-    getInjectionVirus(): IInjectionVirus;
-    getFluorophore(): IFluorophore;
-    getNeurons(): INeuron[];
+    getSample?(): ISample;
+    getBrainArea?(): IBrainArea;
+    getInjectionVirus?(): IInjectionVirus;
+    getFluorophore?(): IFluorophore;
+    getNeurons?(): INeuron[];
 }
 
 export interface IInjectionInput {
     id: string;
-    brainAreaId: string;
-    injectionVirusId: string;
-    injectionVirusName: string;
-    fluorophoreId: string;
-    fluorophoreName: string;
-    sampleId: string;
+    brainAreaId?: string;
+    injectionVirusId?: string;
+    injectionVirusName?: string;
+    fluorophoreId?: string;
+    fluorophoreName?: string;
+    sampleId?: string;
 }
 
 const ModelName = "Injection";
@@ -181,6 +180,16 @@ class InjectionModelDefinition implements IModelImportDefinition {
             }
 
             return row.update(injectionInput);
+        };
+
+        Injection.deleteFromInput = async (injection: IInjectionInput): Promise<number> => {
+            // Note - there is nothing here to prevent dangling transformed tracings.  Caller assumes responsibility to
+            // enforce relationships across database boundaries.
+            if (!injection.id) {
+                throw {message: "id is a required input"};
+            }
+
+            return await Injection.destroy({where: {id: injection.id}});
         };
 
         return Injection;
