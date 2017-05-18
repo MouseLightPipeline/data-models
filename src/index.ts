@@ -14,7 +14,7 @@ export {IInjectionVirus, IInjectionVirusInput} from "./sample/injectionVirus";
 export {IMouseStrain} from "./sample/mouseStrain";
 export {INeuron} from "./sample/neuron";
 export {IRegistrationTransform} from "./sample/registrationTransform";
-export {ISample} from "./sample/sample";
+export {ISample, ISampleInput} from "./sample/sample";
 
 export {IConnectionOptions} from "./connector/connector";
 export {SampleConnector} from "./connector/sample";
