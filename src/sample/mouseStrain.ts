@@ -1,16 +1,21 @@
 import {Sequelize, DataTypes} from "sequelize";
-import {isNull} from "util";
 
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {ISample} from "./sample";
+import {isNullOrEmpty} from "../util/modelUtil";
 
 export interface IMouseStrain {
     id: string;
     name: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 
-    getSamples(): ISample[];
+    getSamples?(): ISample[];
+}
+
+export interface IMouseStrainInput {
+    id: string;
+    name?: string;
 }
 
 const ModelName = "MouseStrain";
@@ -38,18 +43,43 @@ class MouseStrainModelDefinition implements IModelImportDefinition {
             paranoid: true
         });
 
-        MouseStrain.isDuplicate = async (mouseStrain: IMouseStrain, id: string = null): Promise<boolean> => {
-            const dupes = await MouseStrain.findAll({where: {name: {$iLike: mouseStrain.name}}});
-
-            return dupes.length > 0 && (!id || (id !== dupes[0].id));
+        MouseStrain.duplicateWhereClause = (name: string) => {
+            return {where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', name))}
         };
 
-        MouseStrain.createFromInput = async (mouseStrain: IMouseStrain): Promise<IMouseStrain> => {
-            if (!mouseStrain.name || mouseStrain.name.length === 0) {
+        MouseStrain.findDuplicate = async (name: string): Promise<IMouseStrain> => {
+            if (!name) {
+                return null;
+            }
+
+            return MouseStrain.findOne(MouseStrain.duplicateWhereClause(name));
+        };
+
+        /**
+         * Complex where clause to allow for case insensitive requires defaults property.  Wrapping for consistency as
+         * a result.
+         * @param {IMouseStrainInput} mouseStrain define name property
+         **/
+        MouseStrain.findOrCreateFromInput = async (mouseStrain: IMouseStrainInput): Promise<IMouseStrain> => {
+            const options = MouseStrain.duplicateWhereClause(mouseStrain.name);
+
+            options["defaults"] = {name: mouseStrain.name};
+
+            return MouseStrain.findOrCreate(options);
+        };
+
+        MouseStrain.createFromInput = async (mouseStrain: IMouseStrainInput): Promise<IMouseStrain> => {
+            if (!mouseStrain) {
+                throw {message: "Mouse strain properties are a required input"};
+            }
+
+            if (!mouseStrain.name) {
                 throw {message: "name is a required input"};
             }
 
-            if (await MouseStrain.isDuplicate(mouseStrain)) {
+            const duplicate = await MouseStrain.findDuplicate(mouseStrain.name);
+
+            if (duplicate) {
                 throw {message: `The name "${mouseStrain.name}" has already been used`};
             }
 
@@ -58,20 +88,30 @@ class MouseStrainModelDefinition implements IModelImportDefinition {
             });
         };
 
-        MouseStrain.updateFromInput = async (mouseStrain: IMouseStrain): Promise<IMouseStrain> => {
+        MouseStrain.updateFromInput = async (mouseStrain: IMouseStrainInput): Promise<IMouseStrain> => {
+            if (!mouseStrain) {
+                throw {message: "Mouse strain properties are a required input"};
+            }
+
+            if (!mouseStrain.id) {
+                throw {message: "Mouse strain input must contain the id of the object to update"};
+            }
+
             let row = await MouseStrain.findById(mouseStrain.id);
 
             if (!row) {
                 throw {message: "The mouse strain could not be found"};
             }
 
-            if (mouseStrain.name && await MouseStrain.isDuplicate(mouseStrain, mouseStrain.id)) {
-                throw {message: `The name "${mouseStrain.name}" has already been used`};
+            // Undefined is ok - although strange as that is the only property at the moment.
+            if (isNullOrEmpty(mouseStrain.name)) {
+                throw {message: "name cannot be empty or null"};
             }
 
-            // Undefined is ok - although strange as that is the only property to update at the moment.
-            if (isNull(mouseStrain.name) || (mouseStrain.name && mouseStrain.name.length === 0)) {
-                throw {message: "name cannot be empty"};
+            const duplicate = await MouseStrain.findDuplicate(mouseStrain.name);
+
+            if (duplicate && duplicate.id !== mouseStrain.id) {
+                throw {message: `The strain "${mouseStrain.name}" has already been created`};
             }
 
             return row.update(mouseStrain);

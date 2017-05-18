@@ -114,7 +114,7 @@ class FluorophoreModelDefinition implements IModelImportDefinition {
             const duplicate = await Fluorophore.findDuplicate(fluorophoreInput.name);
 
             if (duplicate && duplicate.id !== fluorophoreInput.id) {
-                throw {message: `The name "${Fluorophore.name}" has already been used`};
+                throw {message: `The name "${fluorophoreInput.name}" has already been used`};
             }
 
             return row.update(fluorophoreInput);

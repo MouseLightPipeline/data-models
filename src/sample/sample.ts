@@ -16,12 +16,25 @@ export interface ISample {
     mouseStrainId: string;
     activeRegistrationTransformId: string;
     sharing: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 
-    getInjections(): IInjection[];
-    getRegistrationTransforms(): IRegistrationTransform;
-    getMouseStrain(): IMouseStrain;
+    getInjections?(): IInjection[];
+    getRegistrationTransforms?(): IRegistrationTransform;
+    getMouseStrain?(): IMouseStrain;
+}
+
+export interface ISampleInput {
+    id: string,
+    idNumber: number;
+    animalId: string;
+    tag: string;
+    comment: string;
+    sampleDate: number;
+    mouseStrainId: string;
+    mouseStrainName: string;
+    activeRegistrationTransformId: string;
+    sharing: number;
 }
 
 const ModelName = "Sample";
@@ -29,7 +42,9 @@ const ModelName = "Sample";
 class SampleModelDefinition implements IModelImportDefinition {
     private _modelName = ModelName;
 
-    public get modelName() {return this._modelName; }
+    public get modelName() {
+        return this._modelName;
+    }
 
     public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const Sample: any = sequelize.define(ModelName, {
@@ -68,12 +83,16 @@ class SampleModelDefinition implements IModelImportDefinition {
                         foreignKey: "sampleId",
                         as: "registrationTransforms"
                     });
-                    Sample.belongsTo(models.MouseStrain, {foreignKey: "mouseStrainId", as: "fluorophore"});
+                    Sample.belongsTo(models.MouseStrain, {foreignKey: "mouseStrainId", as: "mouseStrain"});
+
+                    Sample.MouseStrainModel = models.MouseStrain;
                 }
             },
             timestamps: true,
             paranoid: true
         });
+
+        Sample.MouseStrainModel = null;
 
         Sample.isDuplicate = async (sample: ISample, id: string = null): Promise<boolean> => {
             const dupes = await Sample.findAll({where: {idNumber: sample.idNumber}});
@@ -81,7 +100,7 @@ class SampleModelDefinition implements IModelImportDefinition {
             return dupes.length > 0 && (!id || (id !== dupes[0].id));
         };
 
-        Sample.createFromInput = async (sample: ISample): Promise<ISample> => {
+        Sample.createFromInput = async (sample: ISampleInput): Promise<ISample> => {
             if (!sample.idNumber) {
                 throw {message: "idNumber is a required input"};
             }
@@ -110,7 +129,7 @@ class SampleModelDefinition implements IModelImportDefinition {
             });
         };
 
-        Sample.updateFromInput = async (sample: ISample): Promise<ISample> => {
+        Sample.updateFromInput = async (sample: ISampleInput): Promise<ISample> => {
             // Ok to be undefined (and not updated) - not ok to be null
             if (isNull(sample.idNumber) || sample.idNumber && isNaN(sample.idNumber)) {
                 throw {message: `The id number can not be empty`};
@@ -141,6 +160,14 @@ class SampleModelDefinition implements IModelImportDefinition {
 
             if (isNull(sample.sharing)) {
                 sample.sharing = 0;
+            }
+
+            if (sample.mouseStrainName) {
+                const out = await Sample.MouseStrainModel.findOrCreateFromInput({
+                    name: sample.mouseStrainName
+                });
+
+                sample.mouseStrainId = out[0].id;
             }
 
             return row.update(sample);

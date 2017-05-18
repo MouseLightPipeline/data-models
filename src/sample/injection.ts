@@ -179,6 +179,30 @@ class InjectionModelDefinition implements IModelImportDefinition {
                 throw {message: "fluorophore id must be a valid sample"};
             }
 
+            const merged = Object.assign(row, injectionInput);
+
+            const duplicate = await Injection.findDuplicate(merged);
+
+            if (duplicate) {
+                throw {message: `An injection for this sample in this brain compartment exists`};
+            }
+
+            if (injectionInput.injectionVirusName) {
+                const out = await Injection.InjectionVirusModel.findOrCreateFromInput({
+                    name: injectionInput.injectionVirusName
+                });
+
+                injectionInput.injectionVirusName = out[0].id;
+            }
+
+            if (injectionInput.fluorophoreName) {
+                const out = await Injection.FluorophoreModel.findOrCreateFromInput({
+                    name: injectionInput.fluorophoreName
+                });
+
+                injectionInput.fluorophoreName = out[0].id;
+            }
+
             return row.update(injectionInput);
         };
 
