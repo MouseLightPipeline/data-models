@@ -1,5 +1,5 @@
 import {Sequelize, DataTypes} from "sequelize";
-import {isNull} from "util";
+import {isNull, isNullOrUndefined} from "util";
 
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
@@ -8,14 +8,14 @@ import {IMouseStrain} from "./mouseStrain";
 
 export interface ISample {
     id: string,
-    idNumber: number;
-    animalId: string;
-    tag: string;
-    comment: string;
-    sampleDate: Date;
-    mouseStrainId: string;
-    activeRegistrationTransformId: string;
-    sharing: number;
+    idNumber?: number;
+    animalId?: string;
+    tag?: string;
+    comment?: string;
+    sampleDate?: Date;
+    mouseStrainId?: string;
+    activeRegistrationTransformId?: string;
+    sharing?: number;
     createdAt?: Date;
     updatedAt?: Date;
 
@@ -101,11 +101,21 @@ class SampleModelDefinition implements IModelImportDefinition {
         };
 
         Sample.createFromInput = async (sample: ISampleInput): Promise<ISample> => {
-            if (!sample.idNumber) {
-                throw {message: "idNumber is a required input"};
+            if (isNullOrUndefined(sample)) {
+                throw {message: "Sample input object is required"};
             }
 
-            if (await Sample.isDuplicate(sample)) {
+            let idNumber = sample.idNumber;
+
+            if (isNullOrUndefined(idNumber)) {
+                const existing = await Sample.findAll({attributes: ["idNumber"], order:[["idNumber", "DESC"]], limit: 1}).map((o: ISample) => o.idNumber);
+
+                if (existing) {
+                    idNumber = existing[0] + 1;
+                } else {
+                    idNumber = 1;
+                }
+            } else if (await Sample.isDuplicate(sample)) {
                 throw {message: `The id number ${sample.idNumber} has already been used`};
             }
 
@@ -118,7 +128,7 @@ class SampleModelDefinition implements IModelImportDefinition {
             const sharing = sample.sharing || 0;
 
             return await Sample.create({
-                idNumber: sample.idNumber,
+                idNumber: idNumber,
                 sampleDate: sampleDate,
                 animalId: animalId,
                 tag: tag,
@@ -171,6 +181,16 @@ class SampleModelDefinition implements IModelImportDefinition {
             }
 
             return row.update(sample);
+        };
+
+        Sample.deleteFromInput = async (sample: ISampleInput): Promise<number> => {
+            // Note - there is nothing here to prevent dangling transformed tracings.  Caller assumes responsibility to
+            // enforce relationships across database boundaries.
+            if (!sample.id) {
+                throw {message: "The sample id is a required input"};
+            }
+
+            return await Sample.destroy({where: {id: sample.id}});
         };
 
         return Sample;
