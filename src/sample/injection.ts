@@ -183,7 +183,7 @@ class InjectionModelDefinition implements IModelImportDefinition {
 
             const duplicate = await Injection.findDuplicate(merged);
 
-            if (duplicate) {
+            if (duplicate && duplicate.id !== injectionInput.id) {
                 throw {message: `An injection for this sample in this brain compartment exists`};
             }
 
