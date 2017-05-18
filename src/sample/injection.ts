@@ -192,7 +192,7 @@ class InjectionModelDefinition implements IModelImportDefinition {
                     name: injectionInput.injectionVirusName
                 });
 
-                injectionInput.injectionVirusName = out[0].id;
+                injectionInput.injectionVirusId = out[0].id;
             }
 
             if (injectionInput.fluorophoreName) {
@@ -200,7 +200,7 @@ class InjectionModelDefinition implements IModelImportDefinition {
                     name: injectionInput.fluorophoreName
                 });
 
-                injectionInput.fluorophoreName = out[0].id;
+                injectionInput.fluorophoreId = out[0].id;
             }
 
             return row.update(injectionInput);
