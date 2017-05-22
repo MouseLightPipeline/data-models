@@ -15,7 +15,7 @@ export interface INeuron {
     sharing?: number;
     createdAt?: Date;
     updatedAt?: Date;
-    getInjection(): IInjection;
+    getInjection?(): IInjection;
     getBrainArea(): IBrainArea;
 }
 export interface INeuronInput {

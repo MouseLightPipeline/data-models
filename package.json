@@ -1,6 +1,6 @@
 {
   "name": "ndb-data-models",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "repository": "https://github.com/MouseLightDataBrowser/data-models.git",
   "author": "Patrick Edson <pedson@leapscientific.com>",
   "license": "Janelia",

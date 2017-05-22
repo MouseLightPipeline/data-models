@@ -20,8 +20,8 @@ export interface INeuron {
     createdAt?: Date;
     updatedAt?: Date;
 
-    getInjection(): IInjection;
-    getBrainArea(): IBrainArea;
+    getInjection?(): IInjection;
+    getBrainArea?(): IBrainArea;
 }
 
 export interface INeuronInput {
