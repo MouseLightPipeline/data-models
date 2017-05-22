@@ -1,6 +1,6 @@
 const fs = require("fs");
 const Sequelize = require("sequelize");
-const Umzug = require('umzug');
+const Umzug = require("umzug");
 
 import {IConnectionOptions} from "../connector/connector";
 

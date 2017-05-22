@@ -45,7 +45,7 @@ class InjectionVirusModelDefinition implements IModelImportDefinition {
         });
 
         InjectionVirus.duplicateWhereClause = (name: string) => {
-            return {where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', name))}
+            return {where: sequelize.where(sequelize.fn("lower", sequelize.col("name")), sequelize.fn("lower", name))}
         };
 
         InjectionVirus.findDuplicate = async (name: string): Promise<IInjectionVirus> => {

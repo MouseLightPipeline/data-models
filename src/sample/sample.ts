@@ -108,7 +108,11 @@ class SampleModelDefinition implements IModelImportDefinition {
             let idNumber = sample.idNumber;
 
             if (isNullOrUndefined(idNumber)) {
-                const existing = await Sample.findAll({attributes: ["idNumber"], order:[["idNumber", "DESC"]], limit: 1}).map((o: ISample) => o.idNumber);
+                const existing = await Sample.findAll({
+                    attributes: ["idNumber"],
+                    order: [["idNumber", "DESC"]],
+                    limit: 1
+                }).map((o: ISample) => o.idNumber);
 
                 if (existing) {
                     idNumber = existing[0] + 1;

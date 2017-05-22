@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
 
 import {IConnectionOptions} from "../connector/connector";
 

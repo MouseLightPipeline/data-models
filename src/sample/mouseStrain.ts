@@ -44,7 +44,7 @@ class MouseStrainModelDefinition implements IModelImportDefinition {
         });
 
         MouseStrain.duplicateWhereClause = (name: string) => {
-            return {where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', name))}
+            return {where: sequelize.where(sequelize.fn("lower", sequelize.col("name")), sequelize.fn("lower", name))}
         };
 
         MouseStrain.findDuplicate = async (name: string): Promise<IMouseStrain> => {

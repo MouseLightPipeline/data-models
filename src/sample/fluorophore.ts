@@ -1,5 +1,4 @@
 import {Sequelize, DataTypes} from "sequelize";
-import {isNull} from "util";
 
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
@@ -47,7 +46,7 @@ class FluorophoreModelDefinition implements IModelImportDefinition {
         });
 
         Fluorophore.duplicateWhereClause = (name: string) => {
-            return {where: sequelize.where(sequelize.fn('lower', sequelize.col('name')), sequelize.fn('lower', name))}
+            return {where: sequelize.where(sequelize.fn("lower", sequelize.col("name")), sequelize.fn("lower", name))}
         };
 
         Fluorophore.findDuplicate = async (name: string): Promise<IFluorophore> => {
