@@ -16,7 +16,7 @@ export interface INeuron {
     createdAt?: Date;
     updatedAt?: Date;
     getInjection?(): IInjection;
-    getBrainArea(): IBrainArea;
+    getBrainArea?(): IBrainArea;
 }
 export interface INeuronInput {
     id: string;
