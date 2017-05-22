@@ -6,7 +6,7 @@ import {isNullOrEmpty} from "../util/modelUtil";
 
 export interface IMouseStrain {
     id: string;
-    name: string;
+    name?: string;
     createdAt?: Date;
     updatedAt?: Date;
 

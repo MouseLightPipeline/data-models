@@ -6,14 +6,22 @@ import {ISample} from "./sample";
 
 export interface IRegistrationTransform {
     id: string;
-    location: string;
-    name: string;
-    notes: string;
-    sampleId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    location?: string;
+    name?: string;
+    notes?: string;
+    sampleId?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 
-    getSample(): ISample;
+    getSample?(): ISample;
+}
+
+export interface ITransformInput {
+    id: string;
+    location?: string;
+    name?: string;
+    notes?: string;
+    sampleId?: string;
 }
 
 const ModelName = "RegistrationTransform";
@@ -57,7 +65,7 @@ class RegistrationTransformModelDefinition implements IModelImportDefinition {
             return dupes.length > 0 && (!id || (id !== dupes[0].id));
         };
 
-        RegistrationTransform.createFromInput = async (registrationTransform: IRegistrationTransform): Promise<IRegistrationTransform> => {
+        RegistrationTransform.createFromInput = async (registrationTransform: ITransformInput): Promise<IRegistrationTransform> => {
             if (!registrationTransform.location || registrationTransform.location.length === 0) {
                 throw {message: "location is a required input"};
             }
@@ -80,7 +88,7 @@ class RegistrationTransformModelDefinition implements IModelImportDefinition {
             });
         };
 
-        RegistrationTransform.updateFromInput = async (registrationTransform: IRegistrationTransform): Promise<IRegistrationTransform> => {
+        RegistrationTransform.updateFromInput = async (registrationTransform: ITransformInput): Promise<IRegistrationTransform> => {
             let row = await RegistrationTransform.findById(registrationTransform.id);
 
             if (!row) {
@@ -125,7 +133,7 @@ class RegistrationTransformModelDefinition implements IModelImportDefinition {
             return row.update(registrationTransform);
         };
 
-        RegistrationTransform.deleteFromInput = async (registrationTransform: IRegistrationTransform): Promise<number> => {
+        RegistrationTransform.deleteFromInput = async (registrationTransform: ITransformInput): Promise<number> => {
             // Note - there is nothing here to prevent dangling transformed tracings.  Caller assumes responsibility to
             // enforce relationships across database boundaries.
             if (!registrationTransform.id || registrationTransform.id.length === 0) {

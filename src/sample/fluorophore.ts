@@ -6,16 +6,16 @@ import {isNullOrEmpty} from "../util/modelUtil";
 
 export interface IFluorophore {
     id: string;
-    name: string;
-    createdAt: Date;
-    updatedAt: Date;
+    name?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 
-    getInjections(): IInjection[];
+    getInjections?(): IInjection[];
 }
 
 export interface IFluorophoreInput {
     id: string;
-    name: string;
+    name?: string;
 }
 
 const ModelName = "Fluorophore";

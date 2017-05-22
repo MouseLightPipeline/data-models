@@ -188,8 +188,6 @@ class SampleModelDefinition implements IModelImportDefinition {
         };
 
         Sample.deleteFromInput = async (sample: ISampleInput): Promise<number> => {
-            // Note - there is nothing here to prevent dangling transformed tracings.  Caller assumes responsibility to
-            // enforce relationships across database boundaries.
             if (!sample.id) {
                 throw {message: "The sample id is a required input"};
             }

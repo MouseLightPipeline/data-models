@@ -4,6 +4,7 @@ import {isNull} from "util";
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
 import {IBrainArea} from "./brainArea";
+import {isNullOrEmpty} from "../util/modelUtil";
 
 export interface INeuron {
     id: string;
@@ -43,7 +44,9 @@ const ModelName = "Neuron";
 class NeuronModelDefinition implements IModelImportDefinition {
     private _modelName = ModelName;
 
-    public get modelName() {return this._modelName; }
+    public get modelName() {
+        return this._modelName;
+    }
 
     public sequelizeImport(sequelize: Sequelize, DataTypes: DataTypes): any {
         const Neuron: any = sequelize.define(ModelName, {
@@ -174,29 +177,32 @@ class NeuronModelDefinition implements IModelImportDefinition {
             }
 
             // Undefined is ok (no update) - null, or empty is not.
-            if (isNull(neuron.idString) || (neuron.idString && neuron.idString.length === 0)) {
+            if (isNullOrEmpty(neuron.idString)) {
                 throw {message: "idString cannot be empty"};
             }
 
-            // Same as above, but also must be existing sample
-            if (isNull(neuron.injectionId) || (neuron.injectionId && neuron.injectionId.length === 0)) {
+            if (isNullOrEmpty(neuron.injectionId)) {
                 throw {message: "injection id cannot be empty"};
             }
 
-            const injection = await Neuron.InjectionModel.findById(neuron.injectionId);
+            if (neuron.injectionId) {
+                const injection = await Neuron.InjectionModel.findById(neuron.injectionId);
 
-            if (!injection) {
-                throw {message: "the injection can not be found"};
+                if (!injection) {
+                    throw {message: "the injection can not be found"};
+                }
             }
 
-            if (isNull(neuron.brainAreaId) || (neuron.brainAreaId && neuron.brainAreaId.length === 0)) {
+            if (isNullOrEmpty(neuron.brainAreaId)) {
                 throw {message: "injection id cannot be empty"};
             }
 
-            const brainArea = await Neuron.BrainAreaModel.findById(neuron.brainAreaId);
+            if (neuron.brainAreaId) {
+                const brainArea = await Neuron.BrainAreaModel.findById(neuron.brainAreaId);
 
-            if (!brainArea) {
-                throw {message: "the brain area can not be found"};
+                if (!brainArea) {
+                    throw {message: "the brain area can not be found"};
+                }
             }
 
             // Undefined is ok (no update) - but prefer not null
@@ -225,6 +231,16 @@ class NeuronModelDefinition implements IModelImportDefinition {
             }
 
             return row.update(neuron);
+        };
+
+        Neuron.deleteFromInput = async (neuron: INeuronInput): Promise<number> => {
+            // Note - there is nothing here to prevent dangling swc tracings.  Caller assumes responsibility to
+            // enforce relationships across database boundaries.
+            if (!neuron.id) {
+                throw {message: "The neuron id is a required input"};
+            }
+
+            return await Neuron.destroy({where: {id: neuron.id}});
         };
 
         return Neuron;
