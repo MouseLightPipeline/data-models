@@ -27,8 +27,8 @@ export interface INeuronInput {
     x?: number;
     y?: number;
     z?: number;
+    sharing?: number;
     brainAreaId?: string;
     injectionId?: string;
-    sharing?: number;
 }
 export declare const Neuron: IModelImportDefinition;

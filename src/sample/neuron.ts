@@ -34,9 +34,9 @@ export interface INeuronInput {
     x?: number;
     y?: number;
     z?: number;
+    sharing?: number;
     brainAreaId?: string;
     injectionId?: string;
-    sharing?: number;
 }
 
 const ModelName = "Neuron";
@@ -81,6 +81,10 @@ class NeuronModelDefinition implements IModelImportDefinition {
             },
             z: {
                 type: DataTypes.DOUBLE,
+                defaultValue: 0
+            },
+            sharing: {
+                type: DataTypes.INTEGER,
                 defaultValue: 0
             },
         }, {
@@ -132,7 +136,7 @@ class NeuronModelDefinition implements IModelImportDefinition {
         };
 
         Neuron.createFromInput = async (neuron: INeuron): Promise<INeuron> => {
-            if (!neuron.idString || neuron.idString.length === 0) {
+            if (!neuron.idString) {
                 throw {message: "idString is a required input"};
             }
 
@@ -154,7 +158,7 @@ class NeuronModelDefinition implements IModelImportDefinition {
 
             return await Neuron.create({
                 idNumber: neuron.idNumber || 0,
-                idString: neuron.idString || "",
+                idString: neuron.idString,
                 tag: neuron.tag || "",
                 keywords: neuron.keywords || "",
                 x: neuron.x || 0,
