@@ -1,16 +1,15 @@
-import {SampleConnector} from "../src/connector/sample";
+import * as path from "path";
+import {createSampleConnector} from "./support/mockDatabase";
+import {SampleConnector} from "../lib/connector/sample";
+import {seedFile} from "../lib/services/seed";
 
-const options = {
-    database: "samples_development",
-    username: "postgres",
-    password: "pgsecret",
-    host: "localhost",
-    port: 5432,
-    dialect: "postgres",
-    logging: null
-};
+let connector: SampleConnector = null;
 
-const connector = new SampleConnector(options);
+beforeAll(async () => {
+    connector = await createSampleConnector();
+
+    await seedFile(connector.connection, path.normalize(path.join(__dirname, "./seeders/sampleDefault")));
+});
 
 test("find all samples", async () => {
     expect.assertions(1);
@@ -19,7 +18,7 @@ test("find all samples", async () => {
 
     const objs = await connector.models.Sample.findAll({});
 
-    expect(objs.length > 0).toBe(true);
+    expect(objs.length === 0).toBe(true);
 });
 
 test("test auto id assign", async () => {
@@ -27,7 +26,7 @@ test("test auto id assign", async () => {
 
     const obj = await connector.models.Sample.createFromInput({});
 
-    expect(obj.idNumber).toBe(2);
+    expect(obj.idNumber).toBe(1);
 
     await connector.models.Sample.destroy({where: {id: obj.id}, force: true});
 });

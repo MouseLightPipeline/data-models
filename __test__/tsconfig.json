@@ -6,13 +6,6 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "skipLibCheck": false,
-    "declaration": true,
-    "outDir": "lib"
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "noEmit": true
+  }
 }

@@ -114,7 +114,7 @@ class SampleModelDefinition implements IModelImportDefinition {
                     limit: 1
                 }).map((o: ISample) => o.idNumber);
 
-                if (existing) {
+                if (existing.length > 0) {
                     idNumber = existing[0] + 1;
                 } else {
                     idNumber = 1;
@@ -176,12 +176,15 @@ class SampleModelDefinition implements IModelImportDefinition {
                 sample.sharing = 0;
             }
 
+            // Ok to be null.
             if (sample.mouseStrainName) {
                 const out = await Sample.MouseStrainModel.findOrCreateFromInput({
                     name: sample.mouseStrainName
                 });
 
                 sample.mouseStrainId = out[0].id;
+            } else if (isNull(sample.mouseStrainName)) {
+                sample.mouseStrainName = null;
             }
 
             return row.update(sample);

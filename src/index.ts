@@ -19,5 +19,5 @@ export {INeuron, INeuronInput} from "./sample/neuron";
 export {IConnectionOptions} from "./connector/connector";
 export {SampleConnector} from "./connector/sample";
 
-export {migrate} from "./services/migrate";
-export {seed} from "./services/seed";
+export {migrate, migrateSampleDatabase} from "./services/migrate";
+export {seed, seedFile} from "./services/seed";

@@ -1,10 +1,16 @@
-const fs = require("fs");
-const Sequelize = require("sequelize");
-const Umzug = require("umzug");
+import * as path from "path";
+import * as Sequelize from "sequelize";
+import * as Umzug from "umzug";
 
 import {IConnectionOptions} from "../connector/connector";
 
-export function migrate(connectionOptions: IConnectionOptions, migrationPath: string) {
+export async function migrateSampleDatabase(connectionOptions: IConnectionOptions): Promise<void> {
+    const location = path.normalize(path.join(__dirname, "../sample/migrations"));
+
+    return migrate(connectionOptions, location);
+}
+
+export async function migrate(connectionOptions: IConnectionOptions, migrationPath: string): Promise<void> {
     const sequelize = new Sequelize(connectionOptions.database, connectionOptions.username, connectionOptions.password, connectionOptions);
 
     const umzug = new Umzug({
@@ -23,16 +29,17 @@ export function migrate(connectionOptions: IConnectionOptions, migrationPath: st
         },
 
         logging: function () {
-            console.log.apply(null, arguments);
+            // console.log.apply(null, arguments);
         },
     });
 
-    umzug.up().then((out: any) => {
+    try {
+        const out = await umzug.up();
         if (out.length === 0) {
             console.log("No migrations were executed, database schema was already up to date.")
         }
-    }).catch((err: any) => {
+    } catch (err) {
         console.log("Migration failed.");
         console.log(err);
-    });
+    }
 }
