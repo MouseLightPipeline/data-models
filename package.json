@@ -1,6 +1,6 @@
 {
   "name": "ndb-data-models",
-  "version": "0.7.12",
+  "version": "0.7.13",
   "repository": "https://github.com/MouseLightDataBrowser/data-models.git",
   "author": "Patrick Edson <pedson@leapscientific.com>",
   "license": "Janelia",
@@ -8,7 +8,9 @@
   "types": "./lib/index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "rm -rf lib && tsc"
+    "clean": "rm -rf lib",
+    "build": "tsc",
+    "prepublish": "npm run clean && npm run build"
   },
   "jest": {
     "transform": {
@@ -39,6 +41,6 @@
     "jest-cli": "^20.0.1",
     "sqlite3": "^3.1.8",
     "ts-jest": "^20.0.3",
-    "typescript": "^2.3.2"
+    "typescript": "^2.3.3"
   }
 }

@@ -164,6 +164,7 @@ class NeuronModelDefinition implements IModelImportDefinition {
                 x: neuron.x || 0,
                 y: neuron.y || 0,
                 z: neuron.z || 0,
+                sharing: 1,
                 brainAreaId: neuron.brainAreaId,
                 injectionId: neuron.injectionId
             });
@@ -232,6 +233,10 @@ class NeuronModelDefinition implements IModelImportDefinition {
 
             if (isNull(neuron.z)) {
                 neuron.z = 0;
+            }
+
+            if (isNull(neuron.sharing)) {
+                neuron.sharing = 1;
             }
 
             return row.update(neuron);
