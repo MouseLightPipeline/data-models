@@ -101,12 +101,14 @@ class InjectionModelDefinition implements IModelImportDefinition {
                 throw {message: "Brain area is a required input"};
             }
 
-            const duplicate = await Injection.findDuplicate(injectionInput);
+            // Not enforcing any duplicate rules for injections at the moment.
+            /*
+             const duplicate = await Injection.findDuplicate(injectionInput);
 
-            if (duplicate) {
-                throw {message: `An injection for this sample in this brain compartment exists`};
-            }
-
+             if (duplicate) {
+             throw {message: `An injection for this sample in this brain compartment exists`};
+             }
+             */
             let injectionVirusId = null;
 
             if (injectionInput.injectionVirusName) {
