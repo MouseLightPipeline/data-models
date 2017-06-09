@@ -1,10 +1,11 @@
 import {Sequelize, DataTypes} from "sequelize";
-import {isNull} from "util";
+import {isNull, isNullOrUndefined} from "util";
 
 import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
 import {IBrainArea} from "./brainArea";
 import {isNullOrEmpty} from "../util/modelUtil";
+import isEmpty = require("validator/lib/isEmpty");
 
 export interface INeuron {
     id: string;
@@ -198,16 +199,17 @@ class NeuronModelDefinition implements IModelImportDefinition {
                 }
             }
 
-            if (isNullOrEmpty(neuron.brainAreaId)) {
-                throw {message: "injection id cannot be empty"};
-            }
-
+            // Null is ok (inherited),  Undefined is ok (no change).  Id of length zero treated as null.  Otherwise must
+            // find brain area.
             if (neuron.brainAreaId) {
                 const brainArea = await Neuron.BrainAreaModel.findById(neuron.brainAreaId);
 
                 if (!brainArea) {
                     throw {message: "the brain area can not be found"};
                 }
+            } else if (!isNullOrUndefined(neuron.brainAreaId)) {
+                // Zero-length string
+                neuron.brainAreaId = null;
             }
 
             // Undefined is ok (no update) - but prefer not null
