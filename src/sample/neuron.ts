@@ -110,8 +110,12 @@ class NeuronModelDefinition implements IModelImportDefinition {
         Neuron.InjectionModel = null;
         Neuron.SampleModel = null;
 
-        Neuron.isDuplicate = async (neuron: INeuron, id: string = null): Promise<boolean> => {
-            const injection = await Neuron.InjectionModel.findById(neuron.injectionId);
+        Neuron.isDuplicate = async (idString: string, injectionId: string, id: string = null): Promise<boolean> => {
+            if (!injectionId || !idString) {
+                return false;
+            }
+
+            const injection = await Neuron.InjectionModel.findById(injectionId);
 
             if (!injection) {
                 return false;
@@ -131,16 +135,16 @@ class NeuronModelDefinition implements IModelImportDefinition {
             }
 
             // All neurons for sample (via injections) that have the same idString
-            const dupes = await Neuron.findAll({where: {injectionId: {$in: injectionIds}, idString: neuron.idString}});
+            const dupes = await Neuron.findAll({where: {injectionId: {$in: injectionIds}, idString}});
 
             return dupes.length > 0 && (!id || (id !== dupes[0].id));
         };
 
-        Neuron.createFromInput = async (neuron: INeuron): Promise<INeuron> => {
-            if (!neuron.idString) {
-                throw {message: "idString is a required input"};
-            }
+        Neuron.isDuplicateNeuron = async (neuron: INeuron): Promise<boolean> => {
+            return Neuron.isDuplicate(neuron.idString, neuron.injectionId, neuron.id);
+        };
 
+        Neuron.createFromInput = async (neuron: INeuron): Promise<INeuron> => {
             const injection = await Neuron.InjectionModel.findById(neuron.injectionId);
 
             if (!injection) {
@@ -153,13 +157,13 @@ class NeuronModelDefinition implements IModelImportDefinition {
                 throw {message: "the brain area can not be found"};
             }
 
-            if (await Neuron.isDuplicate(neuron)) {
-                throw {message: `A neuron id "${neuron.idString}" already exists on this sample`};
+            if (await Neuron.isDuplicateNeuron(neuron)) {
+                throw {message: `a neuron id "${neuron.idString}" already exists on this sample`};
             }
 
             return await Neuron.create({
                 idNumber: neuron.idNumber || 0,
-                idString: neuron.idString,
+                idString: neuron.idString || "",
                 tag: neuron.tag || "",
                 keywords: neuron.keywords || "",
                 x: neuron.x || 0,
@@ -178,12 +182,12 @@ class NeuronModelDefinition implements IModelImportDefinition {
                 throw {message: "The neuron could not be found"};
             }
 
-            if (neuron.idString && neuron.injectionId && await Neuron.isDuplicate(neuron, neuron.id)) {
+            if (await Neuron.isDuplicateNeuron(neuron.idString || row.idString, neuron.injectionId || row.injectionId, row.id)) {
                 throw {message: `A neuron id "${neuron.idString}" already exists on this sample`};
             }
 
-            // Undefined is ok (no update) - null, or empty is not.
-            if (isNullOrEmpty(neuron.idString)) {
+            // Undefined is ok (no update) - null, or empty is not - unless it is already that way from create
+            if (isNullOrEmpty(neuron.idString) && row.idString) {
                 throw {message: "idString cannot be empty"};
             }
 

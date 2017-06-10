@@ -1,6 +1,6 @@
 {
   "name": "ndb-data-models",
-  "version": "0.7.15",
+  "version": "0.7.16",
   "repository": "https://github.com/MouseLightDataBrowser/data-models.git",
   "author": "Patrick Edson <pedson@leapscientific.com>",
   "license": "Janelia",
@@ -13,6 +13,7 @@
     "prepublish": "npm run clean && npm run build"
   },
   "jest": {
+    "verbose": true,
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
