@@ -140,7 +140,7 @@ class NeuronModelDefinition implements IModelImportDefinition {
             return dupes.length > 0 && (!id || (id !== dupes[0].id));
         };
 
-        Neuron.isDuplicateNeuron = async (neuron: INeuron): Promise<boolean> => {
+        Neuron.isDuplicateNeuronObj = async (neuron: INeuron): Promise<boolean> => {
             return Neuron.isDuplicate(neuron.idString, neuron.injectionId, neuron.id);
         };
 
@@ -151,13 +151,18 @@ class NeuronModelDefinition implements IModelImportDefinition {
                 throw {message: "the injection can not be found"};
             }
 
-            const brainArea = await Neuron.InjectionModel.findById(neuron.brainAreaId);
+            if (neuron.brainAreaId) {
+                const brainArea = await Neuron.BrainAreaModel.findById(neuron.brainAreaId);
 
-            if (!brainArea) {
-                throw {message: "the brain area can not be found"};
+                if (!brainArea) {
+                    throw {message: "the brain area can not be found"};
+                }
+            } else if (!isNull(neuron.brainAreaId)) {
+                // Zero-length string or undefined
+                neuron.brainAreaId = null;
             }
 
-            if (await Neuron.isDuplicateNeuron(neuron)) {
+            if (await Neuron.isDuplicateNeuronObj(neuron)) {
                 throw {message: `a neuron id "${neuron.idString}" already exists on this sample`};
             }
 
@@ -182,7 +187,9 @@ class NeuronModelDefinition implements IModelImportDefinition {
                 throw {message: "The neuron could not be found"};
             }
 
-            if (await Neuron.isDuplicateNeuron(neuron.idString || row.idString, neuron.injectionId || row.injectionId, row.id)) {
+            const isDupe = await Neuron.isDuplicate(neuron.idString || row.idString, neuron.injectionId || row.injectionId, row.id);
+
+            if (isDupe) {
                 throw {message: `A neuron id "${neuron.idString}" already exists on this sample`};
             }
 

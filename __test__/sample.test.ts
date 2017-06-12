@@ -18,7 +18,7 @@ test("find all samples", async () => {
 
     const objs = await connector.models.Sample.findAll({});
 
-    expect(objs.length === 0).toBe(true);
+    expect(objs.length === 1).toBe(true);
 });
 
 test("test auto id assign", async () => {
@@ -26,7 +26,7 @@ test("test auto id assign", async () => {
 
     const obj = await connector.models.Sample.createFromInput({});
 
-    expect(obj.idNumber).toBe(1);
+    expect(obj.idNumber).toBe(2);
 
     await connector.models.Sample.destroy({where: {id: obj.id}, force: true});
 });
