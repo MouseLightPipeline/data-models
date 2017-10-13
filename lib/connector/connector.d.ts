@@ -3,9 +3,11 @@ import * as Sequelize from "sequelize";
 import { IModelImportDefinition } from "./modelLoader";
 import { Options } from "sequelize";
 export interface IConnectionOptions extends Options {
-    database: string;
+    uri?: string;
+    database?: string;
     username?: string;
     password?: string;
+    ssl?: boolean;
 }
 export declare class Connector<T> {
     private _name;

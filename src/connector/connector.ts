@@ -6,9 +6,11 @@ import {Options} from "sequelize";
 const debug = require("debug")("ndb:data-models:connector");
 
 export interface IConnectionOptions extends Options {
-    database: string;
+    uri?: string;
+    database?: string;
     username?: string;
     password?: string;
+    ssl?: boolean;
 }
 
 export class Connector<T> {

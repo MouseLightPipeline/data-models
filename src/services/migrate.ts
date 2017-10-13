@@ -11,7 +11,13 @@ export async function migrateSampleDatabase(connectionOptions: IConnectionOption
 }
 
 export async function migrate(connectionOptions: IConnectionOptions, migrationPath: string): Promise<void> {
-    const sequelize = new Sequelize(connectionOptions.database, connectionOptions.username, connectionOptions.password, connectionOptions);
+    let sequelize = null;
+
+    if (connectionOptions.uri) {
+        sequelize = new Sequelize(connectionOptions.uri);
+    } else {
+        sequelize = new Sequelize(connectionOptions.database, connectionOptions.username, connectionOptions.password, connectionOptions);
+    }
 
     const umzug = new Umzug({
         storage: "sequelize",
