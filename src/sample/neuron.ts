@@ -88,6 +88,9 @@ class NeuronModelDefinition implements IModelImportDefinition {
                 type: DataTypes.INTEGER,
                 defaultValue: 1
             },
+            doi: {
+                type: DataTypes.TEXT
+            }
         }, {
             classMethods: {
                 associate: (models: any) => {
