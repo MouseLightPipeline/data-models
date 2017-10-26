@@ -10,9 +10,10 @@ export interface INeuron {
     x?: number;
     y?: number;
     z?: number;
+    doi?: string;
+    sharing?: number;
     brainAreaId?: string;
     injectionId?: string;
-    sharing?: number;
     createdAt?: Date;
     updatedAt?: Date;
     getInjection?(): IInjection;
@@ -27,6 +28,7 @@ export interface INeuronInput {
     x?: number;
     y?: number;
     z?: number;
+    doi?: string;
     sharing?: number;
     brainAreaId?: string;
     injectionId?: string;

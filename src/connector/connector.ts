@@ -7,9 +7,14 @@ const debug = require("debug")("ndb:data-models:connector");
 
 export interface IConnectionOptions extends Options {
     uri?: string;
+    host?: string;
+    port?: number;
     database?: string;
     username?: string;
     password?: string;
+    dialect?: string;
+    dialectOptions?: any;
+    logging?: boolean;
     ssl?: boolean;
 }
 

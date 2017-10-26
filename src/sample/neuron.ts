@@ -5,7 +5,6 @@ import {IModelImportDefinition} from "../connector/modelLoader";
 import {IInjection} from "./injection";
 import {IBrainArea} from "./brainArea";
 import {isNullOrEmpty} from "../util/modelUtil";
-import isEmpty = require("validator/lib/isEmpty");
 
 export interface INeuron {
     id: string;
@@ -16,9 +15,10 @@ export interface INeuron {
     x?: number;
     y?: number;
     z?: number;
+    doi?: string;
+    sharing?: number;
     brainAreaId?: string;
     injectionId?: string;
-    sharing?: number;
     createdAt?: Date;
     updatedAt?: Date;
 
@@ -35,6 +35,7 @@ export interface INeuronInput {
     x?: number;
     y?: number;
     z?: number;
+    doi?: string;
     sharing?: number;
     brainAreaId?: string;
     injectionId?: string;

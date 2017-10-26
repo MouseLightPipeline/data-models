@@ -4,9 +4,14 @@ import { IModelImportDefinition } from "./modelLoader";
 import { Options } from "sequelize";
 export interface IConnectionOptions extends Options {
     uri?: string;
+    host?: string;
+    port?: number;
     database?: string;
     username?: string;
     password?: string;
+    dialect?: string;
+    dialectOptions?: any;
+    logging?: boolean;
     ssl?: boolean;
 }
 export declare class Connector<T> {
